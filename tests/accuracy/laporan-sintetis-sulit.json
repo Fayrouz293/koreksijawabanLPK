@@ -1,0 +1,236 @@
+{
+ "gaya": "sulit",
+ "catatan": "DATA SINTETIS: tanda pensil digambar program di atas foto lembar kosong asli. Bukan pengukuran pada lembar isian siswa sungguhan.",
+ "total": {
+  "soal": 2205,
+  "benar_otomatis": "87.03%",
+  "tinjau_saran_benar": "12.34%",
+  "tinjau_saran_salah": "0.63%",
+  "salah_tanpa_tanda": "0.00%"
+ },
+ "perVariasi": {
+  "lurus": {
+   "soal": 315,
+   "benar_otomatis": "86.03%",
+   "tinjau_saran_benar": "13.33%",
+   "tinjau_saran_salah": "0.63%",
+   "salah_tanpa_tanda": "0.00%"
+  },
+  "miring": {
+   "soal": 315,
+   "benar_otomatis": "86.67%",
+   "tinjau_saran_benar": "12.38%",
+   "tinjau_saran_salah": "0.95%",
+   "salah_tanpa_tanda": "0.00%"
+  },
+  "terbalik": {
+   "soal": 315,
+   "benar_otomatis": "86.03%",
+   "tinjau_saran_benar": "13.33%",
+   "tinjau_saran_salah": "0.63%",
+   "salah_tanpa_tanda": "0.00%"
+  },
+  "rotasi90": {
+   "soal": 315,
+   "benar_otomatis": "86.03%",
+   "tinjau_saran_benar": "13.33%",
+   "tinjau_saran_salah": "0.63%",
+   "salah_tanpa_tanda": "0.00%"
+  },
+  "bayangan": {
+   "soal": 315,
+   "benar_otomatis": "86.35%",
+   "tinjau_saran_benar": "13.02%",
+   "tinjau_saran_salah": "0.63%",
+   "salah_tanpa_tanda": "0.00%"
+  },
+  "miring_bayangan": {
+   "soal": 315,
+   "benar_otomatis": "86.35%",
+   "tinjau_saran_benar": "13.02%",
+   "tinjau_saran_salah": "0.63%",
+   "salah_tanpa_tanda": "0.00%"
+  },
+  "buram_ringan": {
+   "soal": 315,
+   "benar_otomatis": "91.75%",
+   "tinjau_saran_benar": "7.94%",
+   "tinjau_saran_salah": "0.32%",
+   "salah_tanpa_tanda": "0.00%"
+  }
+ },
+ "perFotoDasar": {
+  "samples/blank/mojigoi-a.jpg": {
+   "catatan": "foto yang sama dengan kalibrasi",
+   "soal": 735,
+   "benar_otomatis": "85.31%",
+   "tinjau_saran_benar": "14.69%",
+   "tinjau_saran_salah": "0.00%",
+   "salah_tanpa_tanda": "0.00%"
+  },
+  "samples/blank/mojigoi-b.jpg": {
+   "catatan": "foto lain (tidak dipakai kalibrasi)",
+   "soal": 735,
+   "benar_otomatis": "88.44%",
+   "tinjau_saran_benar": "10.75%",
+   "tinjau_saran_salah": "0.82%",
+   "salah_tanpa_tanda": "0.00%"
+  },
+  "samples/blank/bunpou-dokkai-a.jpg": {
+   "catatan": "foto yang sama dengan kalibrasi",
+   "soal": 735,
+   "benar_otomatis": "87.35%",
+   "tinjau_saran_benar": "11.56%",
+   "tinjau_saran_salah": "1.09%",
+   "salah_tanpa_tanda": "0.00%"
+  }
+ },
+ "perJenisTanda": {
+  "normal": {
+   "soal": 1512,
+   "benar_otomatis": "91.60%",
+   "tinjau_saran_benar": "8.40%",
+   "tinjau_saran_salah": "0.00%",
+   "salah_tanpa_tanda": "0.00%"
+  },
+  "tipis": {
+   "soal": 168,
+   "benar_otomatis": "29.76%",
+   "tinjau_saran_benar": "70.24%",
+   "tinjau_saran_salah": "0.00%",
+   "salah_tanpa_tanda": "0.00%"
+  },
+  "hapus": {
+   "soal": 217,
+   "benar_otomatis": "100.00%",
+   "tinjau_saran_benar": "0.00%",
+   "tinjau_saran_salah": "0.00%",
+   "salah_tanpa_tanda": "0.00%"
+  },
+  "ganda": {
+   "soal": 112,
+   "benar_otomatis": "87.50%",
+   "tinjau_saran_benar": "0.00%",
+   "tinjau_saran_salah": "12.50%",
+   "salah_tanpa_tanda": "0.00%"
+  },
+  "kosong": {
+   "soal": 98,
+   "benar_otomatis": "100.00%",
+   "tinjau_saran_benar": "0.00%",
+   "tinjau_saran_salah": "0.00%",
+   "salah_tanpa_tanda": "0.00%"
+  },
+  "sebagian": {
+   "soal": 98,
+   "benar_otomatis": "72.45%",
+   "tinjau_saran_benar": "27.55%",
+   "tinjau_saran_salah": "0.00%",
+   "salah_tanpa_tanda": "0.00%"
+  }
+ },
+ "lembarDitolak": [],
+ "gerbangKualitas": [
+  {
+   "foto": "samples/blank/mojigoi-a.jpg",
+   "variasi": "buram_berat",
+   "ditolak": true,
+   "alasan": "terlalu_buram",
+   "kualitas": {
+    "kecerahan": 158,
+    "ketajaman": 1
+   }
+  },
+  {
+   "foto": "samples/blank/mojigoi-a.jpg",
+   "variasi": "gelap",
+   "ditolak": true,
+   "alasan": "terlalu_gelap",
+   "kualitas": {
+    "kecerahan": 35,
+    "ketajaman": 101,
+    "ukuranTabel": 0.5648,
+    "rotasi": 0,
+    "skorStruktur": 0.9962
+   }
+  },
+  {
+   "foto": "samples/blank/mojigoi-a.jpg",
+   "variasi": "terpotong",
+   "ditolak": true,
+   "alasan": "tabel_tidak_lengkap",
+   "kualitas": {
+    "kecerahan": 180,
+    "ketajaman": 841
+   }
+  },
+  {
+   "foto": "samples/blank/mojigoi-b.jpg",
+   "variasi": "buram_berat",
+   "ditolak": true,
+   "alasan": "terlalu_buram",
+   "kualitas": {
+    "kecerahan": 169,
+    "ketajaman": 1
+   }
+  },
+  {
+   "foto": "samples/blank/mojigoi-b.jpg",
+   "variasi": "gelap",
+   "ditolak": true,
+   "alasan": "terlalu_gelap",
+   "kualitas": {
+    "kecerahan": 38,
+    "ketajaman": 96,
+    "ukuranTabel": 0.5715,
+    "rotasi": 0,
+    "skorStruktur": 0.9883
+   }
+  },
+  {
+   "foto": "samples/blank/mojigoi-b.jpg",
+   "variasi": "terpotong",
+   "ditolak": true,
+   "alasan": "tabel_tidak_lengkap",
+   "kualitas": {
+    "kecerahan": 187,
+    "ketajaman": 832
+   }
+  },
+  {
+   "foto": "samples/blank/bunpou-dokkai-a.jpg",
+   "variasi": "buram_berat",
+   "ditolak": true,
+   "alasan": "terlalu_buram",
+   "kualitas": {
+    "kecerahan": 165,
+    "ketajaman": 1
+   }
+  },
+  {
+   "foto": "samples/blank/bunpou-dokkai-a.jpg",
+   "variasi": "gelap",
+   "ditolak": true,
+   "alasan": "terlalu_gelap",
+   "kualitas": {
+    "kecerahan": 37,
+    "ketajaman": 87,
+    "ukuranTabel": 0.5438,
+    "rotasi": 0,
+    "skorStruktur": 0.9932
+   }
+  },
+  {
+   "foto": "samples/blank/bunpou-dokkai-a.jpg",
+   "variasi": "terpotong",
+   "ditolak": true,
+   "alasan": "tabel_tidak_lengkap",
+   "kualitas": {
+    "kecerahan": 181,
+    "ketajaman": 689
+   }
+  }
+ ],
+ "contohSalahTanpaTanda": [],
+ "jumlahSalahTanpaTanda": 0
+}

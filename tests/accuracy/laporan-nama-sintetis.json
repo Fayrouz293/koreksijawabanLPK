@@ -1,0 +1,83 @@
+{
+ "persis": {
+  "n": 90,
+  "top1": "100.00%",
+  "top3": "100.00%",
+  "kuat": "100.00%",
+  "kuat_tapi_salah": 0,
+  "lemah": "0.00%",
+  "tidak_cocok": "0.00%"
+ },
+ "salah1huruf": {
+  "n": 90,
+  "top1": "100.00%",
+  "top3": "100.00%",
+  "kuat": "97.78%",
+  "kuat_tapi_salah": 0,
+  "lemah": "2.22%",
+  "tidak_cocok": "0.00%"
+ },
+ "salah2huruf": {
+  "n": 90,
+  "top1": "100.00%",
+  "top3": "100.00%",
+  "kuat": "85.56%",
+  "kuat_tapi_salah": 0,
+  "lemah": "14.44%",
+  "tidak_cocok": "0.00%"
+ },
+ "hurufHilang": {
+  "n": 90,
+  "top1": "100.00%",
+  "top3": "100.00%",
+  "kuat": "100.00%",
+  "kuat_tapi_salah": 0,
+  "lemah": "0.00%",
+  "tidak_cocok": "0.00%"
+ },
+ "urutanTerbalik": {
+  "n": 90,
+  "top1": "100.00%",
+  "top3": "100.00%",
+  "kuat": "100.00%",
+  "kuat_tapi_salah": 0,
+  "lemah": "0.00%",
+  "tidak_cocok": "0.00%"
+ },
+ "inisialDepan": {
+  "n": 90,
+  "top1": "100.00%",
+  "top3": "100.00%",
+  "kuat": "100.00%",
+  "kuat_tapi_salah": 0,
+  "lemah": "0.00%",
+  "tidak_cocok": "0.00%"
+ },
+ "hurufBesarSemua": {
+  "n": 90,
+  "top1": "100.00%",
+  "top3": "100.00%",
+  "kuat": "100.00%",
+  "kuat_tapi_salah": 0,
+  "lemah": "0.00%",
+  "tidak_cocok": "0.00%"
+ },
+ "namaDepanSaja": {
+  "n": 90,
+  "top1": "76.67%",
+  "top3": "100.00%",
+  "kuat": "30.00%",
+  "kuat_tapi_salah": 0,
+  "lemah": "70.00%",
+  "tidak_cocok": "0.00%"
+ },
+ "katakana": {
+  "n": 15,
+  "top1": "100.00%",
+  "top3": "100.00%",
+  "kuat": "100.00%",
+  "kuat_tapi_salah": 0,
+  "lemah": "0.00%",
+  "tidak_cocok": "0.00%"
+ }
+}

@@ -1,17 +1,21 @@
 import { h, mount, toast, konfirmasi, unduh, pilihFile, formatTanggal } from '../dom.js';
 import { buildBackup, restoreBackup, markBackedUp, daysSinceBackup, validateBackup } from '../../lib/backup.js';
-import { setMeta, getMeta, put } from '../../lib/db.js';
+import { setMeta, getMeta, put, del } from '../../lib/db.js';
 import { describe, validateTemplate } from '../../lib/template.js';
 import { kalibrasiTemplate } from '../../omr-client.js';
 import { fileToImage } from '../../lib/images.js';
 import * as M from '../../lib/model.js';
 import { app } from '../../main.js';
+import { getKodeAkses, setKodeAkses } from '../../lib/api.js';
 
 export async function viewPengaturan(root) {
-  const hari = await daysSinceBackup();
-  const terakhir = await getMeta('cadanganTerakhir');
-  const tpls = await M.semuaTemplate();
+  const [hari, terakhir, tpls, persisten, kuota] = await Promise.all([
+    daysSinceBackup(), getMeta('cadanganTerakhir'), M.semuaTemplate(),
+    Promise.resolve(navigator.storage?.persisted?.()).catch(() => null),
+    Promise.resolve(navigator.storage?.estimate?.()).catch(() => null),
+  ]);
   const denganFoto = h('input', { type: 'checkbox', checked: true });
+  const kode = h('input', { type: 'text', value: getKodeAkses(), placeholder: 'kosongkan bila server tidak memakai kode', autocomplete: 'off' });
   const pakaiNama = h('input', { type: 'checkbox', checked: app.pakaiClaudeNama, disabled: !app.status.claude, onchange: async e => { await setMeta('pakaiClaudeNama', e.target.checked); app.pakaiClaudeNama = e.target.checked; } });
 
   mount(root,
@@ -25,7 +29,13 @@ export async function viewPengaturan(root) {
         h('li', null, 'Potongan kotak nama tiap lembar (bukan seluruh lembar), bila pembacaan nama di bawah aktif.')),
       h('div', null, 'Keduanya dikirim ke server lokal aplikasi, lalu ke Claude API (Anthropic). Pembacaan bulatan, nilai, foto lembar, dan daftar kelas tidak pernah dikirim.'),
       h('label', { class: 'row' }, pakaiNama, 'Baca kotak nama dengan Claude'),
-      h('button', { class: 'btn btn-sm', onclick: async () => { await app.refreshStatus(); viewPengaturan(root); } }, 'Periksa ulang koneksi')),
+      h('label', { class: 'field' }, h('span', null, 'Kode akses server (bila diminta)'), kode),
+      h('button', { class: 'btn btn-sm', onclick: async () => { setKodeAkses(kode.value.trim()); await app.refreshStatus(); viewPengaturan(root); } }, 'Simpan kode dan periksa ulang koneksi')),
+
+    h('h2', null, 'Penyimpanan di perangkat'),
+    h('div', { class: 'card small stack' },
+      h('div', null, persisten ? 'Browser menandai data aplikasi sebagai persisten (tidak dihapus otomatis).' : 'Browser BELUM menjamin data tidak dihapus otomatis saat penyimpanan penuh atau lama tidak dipakai (terutama Safari/iPhone). Pasang aplikasi ke layar utama dan rutin buat cadangan.'),
+      Number.isFinite(kuota?.usage) && Number.isFinite(kuota?.quota) && h('div', { class: 'muted' }, `Terpakai ${(kuota.usage / 1e6).toFixed(1)} MB dari kuota sekitar ${(kuota.quota / 1e6).toFixed(0)} MB.`)),
 
     h('h2', null, 'Cadangan'),
     h('div', { class: 'card stack' },
@@ -33,7 +43,7 @@ export async function viewPengaturan(root) {
       h('label', { class: 'row small' }, denganFoto, 'Sertakan foto lembar (file lebih besar)'),
       h('button', { class: 'btn btn-primary btn-block', onclick: async () => {
         const b = await buildBackup({ denganFoto: denganFoto.checked });
-        unduh(`cadangan-koreksi-${new Date().toISOString().slice(0, 10)}.json`, JSON.stringify(b), 'application/json');
+        unduh(`cadangan-koreksi-${M.hariIni()}.json`, JSON.stringify(b), 'application/json');
         await markBackedUp(); toast('File cadangan diunduh. Simpan di Google Drive atau komputer.', 'ok', 5000); viewPengaturan(root);
       } }, 'Ekspor cadangan (JSON)'),
       h('button', { class: 'btn btn-block', onclick: async () => {
@@ -55,12 +65,16 @@ export async function viewPengaturan(root) {
     h('ul', { class: 'list card' }, tpls.map(t => {
       const d = describe(t);
       return h('li', null, h('div', { class: 'grow' }, h('b', null, t.nama), h('div', { class: 'small muted' },
-        `${d.jumlahSoal} soal · mondai ${d.mondai.map(m => `${m.no} (${m.dari}-${m.sampai})`).join(', ')} · ${t.bawaan ? 'bawaan' : 'kalibrasi sendiri'}`)));
+        `${d.jumlahSoal} soal · mondai ${d.mondai.map(m => `${m.no} (${m.dari}-${m.sampai})`).join(', ')} · ${t.bawaan ? 'bawaan' : 'kalibrasi sendiri'}`)),
+        !t.bawaan && h('button', { class: 'btn btn-sm btn-danger', onclick: async () => {
+          if (!(await konfirmasi('Hapus template?', `Template "${t.nama}" dihapus. Paket dan sesi yang memakainya tidak bisa memindai lagi sampai template dengan ID yang sama dibuat ulang.`, 'Hapus', true))) return;
+          await del('templat', t.id); viewPengaturan(root);
+        } }, 'Hapus'));
     })),
-    formKalibrasi(root));
+    formKalibrasi(root, tpls));
 }
 
-function formKalibrasi(root) {
+function formKalibrasi(root, tpls) {
   const id = h('input', { type: 'text', placeholder: 'mis. n4-choukai' });
   const nama = h('input', { type: 'text', placeholder: 'mis. N4 ちょうかい' });
   const opsi = h('input', { type: 'number', min: 2, max: 6, value: 4 });
@@ -76,7 +90,9 @@ function formKalibrasi(root) {
       const t = { id: id.value.trim(), nama: nama.value.trim(), opsi: Number(opsi.value),
         struktur: struktur.value.split('\n').map(l => l.trim()).filter(Boolean).map((l, i) => ({ id: `T${i + 1}`, baris: l.split(/[,;]+/).map(x => x.trim()).filter(Boolean) })) };
       const errs = validateTemplate(t);
+      if (M.TEMPLATE_BAWAAN.some(x => x.id === t.id)) errs.push(`ID "${t.id}" dipakai template bawaan`);
       if (errs.length) return mount(out, h('div', { class: 'banner bad small' }, errs.join('; ')));
+      if (tpls.some(x => x.id === t.id) && !(await konfirmasi('Ganti template?', `Template "${t.id}" sudah ada. Kalibrasi ulang akan menggantinya; paket yang memakai ID ini ikut memakai hasil baru.`, 'Ganti'))) return;
       const f = await pilihFile('image/*');
       if (!f) return;
       mount(out, h('div', { class: 'busy' }, h('div', { class: 'spinner' }), 'Mengkalibrasi...'));

@@ -60,6 +60,7 @@ export function validateTemplate(t) {
   const errs = [];
   if (!t || typeof t !== 'object') return ['Template bukan objek'];
   if (!t.id) errs.push('id kosong');
+  else if (!/^[a-z0-9-]+$/.test(t.id)) errs.push('id hanya boleh huruf kecil, angka, dan tanda minus');
   if (!t.nama) errs.push('nama kosong');
   if (!Number.isInteger(t.opsi) || t.opsi < 2) errs.push('opsi harus bilangan bulat >= 2');
   if (!Array.isArray(t.struktur) || !t.struktur.length) errs.push('struktur kosong');

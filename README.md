@@ -20,6 +20,22 @@ npm start                   # build lalu jalankan server di http://localhost:878
   lebih tajam karena memakai fokus otomatis kamera bawaan.
 - **Pengembangan**: `npm run server` (terminal 1) dan `npm run dev` (terminal 2, Vite di port 5173, `/api` diteruskan ke 8787).
 
+### Pengaman API key (KODE_AKSES)
+
+Siapa pun yang bisa menjangkau `/api/kunci` dan `/api/nama` bisa memakai API key Anda. Karena itu:
+
+- Tanpa `KODE_AKSES`, fitur Claude hanya melayani browser di **komputer server itu sendiri** (localhost).
+  HP di Wi-Fi yang sama dan pengunjung dari internet mendapat mode manual.
+- Dengan `KODE_AKSES` (minimal 12 karakter, buat acak mis. `openssl rand -hex 12`) di `.env` atau di pengaturan
+  environment hosting, setiap perangkat harus mengisi kode yang sama di **Lainnya > Pengaturan > Kode akses server**.
+- Endpoint tidak membatasi jumlah percobaan; keamanan bergantung pada panjang dan keacakan kode.
+
+### Deploy ke Vercel
+
+`vercel.json` dan `api/*.js` sudah disiapkan (aplikasi statis + 3 fungsi). Tanpa variabel lingkungan apa pun hasilnya
+mode manual. Untuk mengaktifkan Claude, isi `ANTHROPIC_API_KEY` **dan** `KODE_AKSES` di Project Settings >
+Environment Variables, lalu deploy ulang. Di internet publik, kamera langsung di dalam aplikasi berfungsi karena HTTPS.
+
 Tanpa internet atau tanpa API key aplikasi tetap jalan dalam **mode manual**: kunci diketik (atau dibaca lokal dari lembar
 jawaban yang diisi kunci), nama dipilih dari daftar kelas. Setelah dibuka sekali saat online, service worker menyimpan
 aplikasi termasuk OpenCV.js (sekitar 15 MB) sehingga bisa dibuka lagi tanpa internet.

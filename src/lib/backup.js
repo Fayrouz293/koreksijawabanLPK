@@ -38,7 +38,23 @@ export function validateBackup(obj) {
   else {
     if (typeof obj.versi !== 'number' || obj.versi > VERSI_CADANGAN) errs.push(`Versi cadangan ${obj.versi} tidak didukung`);
     for (const st of STORES) if (obj.data?.[st] && !Array.isArray(obj.data[st])) errs.push(`Bagian ${st} rusak`);
+    if (!errs.length) errs.push(...validateIsi(obj.data || {}));
   }
+  return errs;
+}
+
+/** Periksa bentuk minimum tiap catatan agar tampilan tidak rusak setelah impor. */
+function validateIsi(data) {
+  const errs = [];
+  const obj = x => x && typeof x === 'object' && !Array.isArray(x);
+  const str = x => typeof x === 'string' && x.length > 0;
+  const cek = (st, fn, pesan) => { const n = (data[st] || []).filter(x => !(obj(x) && fn(x))).length; if (n) errs.push(`${n} catatan ${st} rusak: ${pesan}`); };
+  cek('kelas', k => str(k.id) && typeof k.nama === 'string' && Array.isArray(k.siswa) && k.siswa.every(s => obj(s) && str(s.id) && typeof s.nama === 'string'), 'butuh id, nama, siswa[]');
+  cek('paket', p => str(p.id) && obj(p.kunci) && str(p.templateId), 'butuh id, kunci, templateId');
+  cek('sesi', s => str(s.id) && obj(s.kunci) && Array.isArray(s.mondai) && str(s.kelasId), 'butuh id, kunci, mondai[], kelasId');
+  cek('hasil', h => str(h.id) && str(h.sesiId) && str(h.siswaId) && obj(h.jawaban) && obj(h.nilai), 'butuh id, sesiId, siswaId, jawaban, nilai');
+  cek('templat', t => str(t.id) && Array.isArray(t.struktur), 'butuh id, struktur[]');
+  cek('meta', m => str(m.key), 'butuh key');
   return errs;
 }
 

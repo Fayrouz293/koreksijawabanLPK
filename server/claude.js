@@ -10,7 +10,8 @@ let client = null;
 export function hasKey() { return Boolean(process.env.ANTHROPIC_API_KEY); }
 function getClient() {
   if (!hasKey()) throw Object.assign(new Error('API key belum diatur'), { status: 503, kode: 'tanpa_key' });
-  client ??= new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY, maxRetries: 2, timeout: 120_000 });
+  // 110 dtk x (1 + 1 percobaan ulang) masih di bawah maxDuration fungsi Vercel (300 dtk, vercel.json)
+  client ??= new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY, maxRetries: 1, timeout: 110_000 });
   return client;
 }
 

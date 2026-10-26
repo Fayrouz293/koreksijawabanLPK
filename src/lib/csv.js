@@ -75,10 +75,16 @@ export function parseClassList(text) {
   return { siswa, peringatan };
 }
 
+/** Cegah formula injection: sel teks yang diawali = + - @ tab/CR dibuka sebagai formula oleh Excel/Sheets. */
+export function amankanSel(v) {
+  if (typeof v !== 'string') return v;
+  return /^[\s]*[=+\-@\uFF1D\uFF0B\uFF0D\uFF20]/.test(v) || /^[\t\r]/.test(v) ? `'${v}` : v;
+}
+
 function esc(v, delim) {
-  const s = v == null ? '' : String(v);
-  return s.includes(delim) || s.includes('"') || s.includes('\n') ? `"${s.replace(/"/g, '""')}"` : s;
+  const s = v == null ? '' : String(amankanSel(v));
+  return s.includes(delim) || s.includes('"') || s.includes('\n') || s.includes('\r') ? `"${s.replace(/"/g, '""')}"` : s;
 }
 
 export function toCSV(rows) { return '﻿' + rows.map(r => r.map(v => esc(v, ',')).join(',')).join('\r\n'); }
-export function toTSV(rows) { return rows.map(r => r.map(v => (v == null ? '' : String(v).replace(/[\t\n]/g, ' '))).join('\t')).join('\n'); }
+export function toTSV(rows) { return rows.map(r => r.map(v => (v == null ? '' : String(amankanSel(v)).replace(/[\t\r\n]/g, ' '))).join('\t')).join('\n'); }

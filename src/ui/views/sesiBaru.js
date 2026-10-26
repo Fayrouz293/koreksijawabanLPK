@@ -44,7 +44,7 @@ export async function viewSesiBaru(root) {
   const step3 = async () => {
     const tpl = await M.getTemplate(st.paket.templateId);
     const ed = editorKunci({ template: tpl, kunci: st.paket.kunci, bobot: st.paket.bobot });
-    const tgl = h('input', { type: 'date', value: new Date().toISOString().slice(0, 10) });
+    const tgl = h('input', { type: 'date', value: M.hariIni() });
     const kePaket = h('input', { type: 'checkbox', checked: true });
     mount(root, h('a', { class: 'back', href: '#/sesi/baru', onclick: e => { e.preventDefault(); step2(); } }, '‹ Kembali'),
       h('h1', null, 'Sesi baru'), langkah(3),

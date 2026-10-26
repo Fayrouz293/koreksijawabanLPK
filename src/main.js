@@ -91,6 +91,8 @@ window.addEventListener('offline', () => app.refreshStatus());
 
 app.refreshStatus();
 render();
+// minta browser tidak menghapus IndexedDB saat ruang penyimpanan menipis
+navigator.storage?.persist?.().catch(() => {});
 // muat OpenCV di latar belakang agar pindai pertama cepat
 siapkanOmr().then(() => { app.omrSiap = true; }).catch(e => console.error('OMR gagal dimuat', e));
 

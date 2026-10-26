@@ -7,6 +7,11 @@ import bunpou from '../../templates/n4-bunpou-dokkai.json';
 
 export const TEMPLATE_BAWAAN = [mojigoi, bunpou];
 
+/** Tanggal hari ini menurut jam perangkat (bukan UTC), format YYYY-MM-DD. */
+export function hariIni(d = new Date()) {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
 // ---------------------------------------------------------------- template
 export async function semuaTemplate() {
   const custom = await db.all('templat');
@@ -53,7 +58,7 @@ export async function sesiBaru({ paket, kelas, tanggal }) {
   const now = new Date().toISOString();
   return db.put('sesi', {
     id: db.uid(), paketId: paket.id, namaPaket: paket.nama, templateId: paket.templateId,
-    kelasId: kelas.id, namaKelas: kelas.nama, tanggal: tanggal || now.slice(0, 10),
+    kelasId: kelas.id, namaKelas: kelas.nama, tanggal: tanggal || hariIni(),
     kunci: { ...paket.kunci }, bobot: { ...paket.bobot }, mondai: paket.mondai, batasLulus: paket.batasLulus,
     status: 'aktif', dibuat: now, diubah: now,
   });

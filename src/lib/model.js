@@ -1,7 +1,7 @@
 // Operasi data aplikasi di atas IndexedDB: kelas, paket, sesi, hasil, template.
 import * as db from './db.js';
 import { describe } from './template.js';
-import { gradeSheet } from './grading.js';
+import { gradeSheet, kunciDariBacaan } from './grading.js';
 import mojigoi from '../../templates/n4-mojigoi.json';
 import bunpou from '../../templates/n4-bunpou-dokkai.json';
 
@@ -97,6 +97,53 @@ export async function hitungUlangSesi(sesi) {
 
 export async function cariHasilSiswaDiSesi(sesiId, siswaId, kecualiId) {
   return (await hasilSesi(sesiId)).find(h => h.siswaId === siswaId && h.id !== kecualiId) || null;
+}
+
+// ------------------------------------------------------- mode scan otomatis
+export const ID_KELAS_OTOMATIS = 'kelas-otomatis';
+
+/** Kelas penampung siswa yang namanya dibaca otomatis (dibuat bila belum ada). */
+export async function kelasOtomatis() {
+  return (await getKelas(ID_KELAS_OTOMATIS)) || simpanKelas({ id: ID_KELAS_OTOMATIS, nama: 'Siswa (scan otomatis)', siswa: [], otomatis: true });
+}
+
+/** Semua siswa dari semua kelas, untuk pencocokan nama. */
+export async function semuaSiswa() {
+  return (await semuaKelas()).flatMap(k => k.siswa.map(s => ({ ...s, kelasId: k.id })));
+}
+
+/** Sesi baru dari lembar kunci yang dipindai: paket + sesi dibuat otomatis, tanpa ketikan. */
+export async function sesiDariLembarKunci(template, bacaan) {
+  const { kunci, tidakJelas } = kunciDariBacaan(bacaan);
+  const tgl = hariIni();
+  const p = await paketBaru({ nama: `${template.nama} · ${tgl}`, template, batasLulus: 60 });
+  p.kunci = { ...p.kunci, ...kunci };
+  await simpanPaket(p);
+  const kelas = await kelasOtomatis();
+  const s = await sesiBaru({ paket: p, kelas, tanggal: tgl });
+  s.otomatis = true;
+  s.kunciTidakJelas = tidakJelas;
+  await simpanSesi(s);
+  return { sesi: s, tidakJelas };
+}
+
+/** Simpan hasil tanpa konfirmasi guru (mode scan otomatis). Ditandai agar bisa dicek belakangan. */
+export async function simpanHasilOtomatis(sesi, h) {
+  const now = new Date().toISOString();
+  const nilai = nilaiDenganSesi(sesi, h.jawaban);
+  const obj = { dibuat: now, ...h, id: h.id || db.uid(), sesiId: sesi.id, nilai, status: 'otomatis', namaDikonfirmasi: false, diubah: now };
+  await db.put('hasil', obj);
+  await simpanSesi(sesi);
+  return obj;
+}
+
+/** Tambah siswa baru (nama hasil bacaan) ke kelas otomatis. */
+export async function tambahSiswaOtomatis(nama, katakana = '') {
+  const k = await kelasOtomatis();
+  const s = { id: db.uid(), nama, katakana, nis: '', dariScan: true };
+  k.siswa.push(s);
+  await simpanKelas(k);
+  return { ...s, kelasId: k.id };
 }
 
 export { db };

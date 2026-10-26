@@ -7,6 +7,20 @@ Deploy: Vercel, proyek `koreksi-lpk-josg`, status **READY** menurut API Vercel; 
 Label yang dipakai: **[Fakta]** = terukur atau terlihat langsung; **[Interpretasi]** = kesimpulan dari fakta;
 **[Belum terbukti]** = asumsi yang belum diuji.
 
+## 0. Tambahan: mode "hanya scan" (setelah audit)
+
+Atas permintaan pengguna, alur utama diubah menjadi tanpa input: lembar kunci dipindai, lalu lembar siswa dipindai
+dan disimpan otomatis (kamera menangkap sendiri, unggah banyak foto, atau PDF scanner).
+
+- [Fakta] Diuji e2e 12/12: kunci dikenali otomatis, 3 foto + PDF 2 halaman + 1 tangkapan kamera tersimpan tanpa
+  ketukan, tidak ada simpan ganda, nilai di layar sama dengan OMR di Node, rekap & CSV benar.
+- [Fakta] Aturan awal "hasil tidak disimpan sebelum nama dikonfirmasi dan soal ragu diputuskan" **dilepas** di mode
+  ini. Sebagai gantinya: tanda "perlu cek" per lembar, foto kotak nama di rekap, tinjau opsional.
+- [Interpretasi] Risiko baru: soal "tidak yakin" dinilai memakai saran OMR (di data sintetis saran itu salah pada
+  0,63% soal skenario sulit), soal "ganda" dihitung salah, dan nama yang salah cocok bisa tertukar antarsiswa.
+  Untuk nilai yang menentukan kelulusan, periksa baris bertanda.
+- [Fakta] Nama hanya terbaca otomatis bila Claude aktif (API key + KODE_AKSES). Di deploy saat ini Claude belum aktif.
+
 ## 1. Ringkasan untuk pengambil keputusan
 
 | Aspek | Status | Dasar |

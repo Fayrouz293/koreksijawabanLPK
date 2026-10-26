@@ -25,4 +25,6 @@ function kirim(msg, transfer = []) {
 
 export const siapkanOmr = () => kirim({ tipe: 'siap' });
 export const bacaLembar = (img, template, opts) => kirim({ tipe: 'baca', img, template, opts });
+/** Baca lembar dengan deteksi template otomatis; hasil.templateId = template yang cocok. */
+export const bacaLembarOtomatis = (img, templates, opts) => kirim({ tipe: 'otomatis', img, template: templates, opts });
 export const kalibrasiTemplate = (img, template, opts) => kirim({ tipe: 'kalibrasi', img, template, opts });

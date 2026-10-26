@@ -12,6 +12,7 @@ import { viewPindai } from './ui/views/pindai.js';
 import { viewHasil } from './ui/views/hasil.js';
 import { viewSiswa } from './ui/views/siswa.js';
 import { viewPengaturan } from './ui/views/pengaturan.js';
+import { viewScan } from './ui/views/scan.js';
 
 /** Status bersama aplikasi. */
 export const app = {
@@ -40,6 +41,8 @@ const routes = [
   [/^\/sesi\/([^/]+)\/pindai$/, viewPindai, 'sesi'],
   [/^\/hasil\/([^/]+)$/, viewHasil, 'sesi'],
   [/^\/pengaturan$/, viewPengaturan, 'pengaturan'],
+  [/^\/scan$/, viewScan, 'scan'],
+  [/^\/scan\/([^/]+)$/, viewScan, 'scan'],
 ];
 
 const root = document.getElementById('app');
@@ -55,7 +58,7 @@ function shell(tab) {
   upd();
   document.addEventListener('status', upd);
   const content = h('main', { id: 'content' });
-  const tabs = [['#/', 'Beranda', 'beranda'], ['#/sesi', 'Sesi', 'sesi'], ['#/kelas', 'Kelas', 'kelas'], ['#/paket', 'Paket', 'paket'], ['#/pengaturan', 'Lainnya', 'pengaturan']];
+  const tabs = [['#/', 'Beranda', 'beranda'], ['#/scan', 'Scan', 'scan'], ['#/sesi', 'Rekap', 'sesi'], ['#/kelas', 'Kelas', 'kelas'], ['#/pengaturan', 'Lainnya', 'pengaturan']];
   mount(root,
     h('header', { class: 'top' }, h('a', { class: 'brand', href: '#/' }, 'Koreksi Try-out LPK JOSG'), statusEl),
     content,

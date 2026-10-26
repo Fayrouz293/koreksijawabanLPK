@@ -11,7 +11,7 @@ export async function viewHasil(root, id) {
   const [kelas, tpl] = await Promise.all([M.getKelas(sesi.kelasId), M.getTemplate(sesi.templateId)]);
   const foto = hs.foto ? await createImageBitmap(hs.foto) : null;
   let nama = { siswa: { id: hs.siswaId, nama: hs.namaSiswa }, timpaId: null };
-  const pn = panelNama({ kelas: kelas || { siswa: [] }, sesi, kotakNama: null, terpilih: { siswaId: hs.siswaId, nama: hs.namaSiswa }, kecualiHasilId: hs.id, onUbah: v => { nama = v; } });
+  const pn = panelNama({ kelas: kelas || { siswa: [] }, sesi, kotakNama: null, fotoNama: hs.fotoNama instanceof Blob ? hs.fotoNama : null, terpilih: { siswaId: hs.siswaId, nama: hs.namaSiswa }, kecualiHasilId: hs.id, onUbah: v => { nama = v; } });
   const pt = panelTinjau({ sesi, template: tpl, bacaan: hs.bacaan, koreksi: hs.koreksi, foto, overlay: hs.overlay });
   mount(root,
     back(`#/sesi/${sesi.id}`, 'Rekap sesi'),

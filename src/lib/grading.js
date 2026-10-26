@@ -81,3 +81,40 @@ export function finalAnswers(bacaan, koreksi = {}) {
   }
   return { jawaban, belum: belum.sort((a, b) => a - b) };
 }
+
+/**
+ * Jawaban untuk mode scan otomatis (tanpa tinjauan guru).
+ * - jelas: dipakai; kosong: null
+ * - tidak_yakin: saran OMR dipakai, nomor ditandai perlu cek
+ * - ganda: null (tidak sah, dihitung salah), ditandai perlu cek
+ */
+export function jawabanOtomatis(bacaan) {
+  const jawaban = {}, perluCek = [];
+  for (const [no, b] of Object.entries(bacaan)) {
+    if (b.status === 'jelas') jawaban[no] = b.pilihan;
+    else if (b.status === 'kosong') jawaban[no] = null;
+    else { jawaban[no] = b.status === 'tidak_yakin' ? b.pilihan ?? null : null; perluCek.push(Number(no)); }
+  }
+  return { jawaban, perluCek: perluCek.sort((a, b) => a - b) };
+}
+
+/**
+ * Kunci dari lembar kunci yang dipindai: hanya bulatan "jelas" yang dipakai;
+ * nomor lain dibiarkan tanpa kunci (tidak dinilai) dan dilaporkan.
+ */
+export function kunciDariBacaan(bacaan) {
+  const kunci = {}, tidakJelas = [];
+  for (const [no, b] of Object.entries(bacaan)) {
+    if (b.status === 'jelas') kunci[no] = b.pilihan;
+    else { kunci[no] = null; tidakJelas.push(Number(no)); }
+  }
+  return { kunci, tidakJelas: tidakJelas.sort((a, b) => a - b) };
+}
+
+/** Sidik jari jawaban: dua bacaan dari lembar yang sama menghasilkan sidik yang sama. */
+export function sidikJawaban(bacaan) {
+  return Object.keys(bacaan).map(Number).sort((a, b) => a - b).map(no => {
+    const b = bacaan[no];
+    return b.status === 'jelas' ? b.pilihan : b.status === 'kosong' ? 0 : 'x';
+  }).join('');
+}

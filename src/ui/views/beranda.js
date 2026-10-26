@@ -25,16 +25,17 @@ export async function viewBeranda(root) {
     await bannerCadangan(),
     !app.status.claude && h('div', { class: 'banner info small' },
       h('b', null, 'Mode manual. '), 'Claude API tidak tersedia (', app.status.alasan || 'tanpa API key', '). ',
-      'Pembacaan bulatan tetap jalan di perangkat. Kunci diketik, nama dipilih dari daftar.'),
+      'Bulatan tetap dibaca otomatis di perangkat; nama siswa tidak dibaca, lembar diberi nomor dan foto kotak namanya disimpan.'),
     h('h1', null, 'Koreksi try-out'),
-    h('a', { class: 'btn btn-primary btn-big btn-block', href: '#/sesi/baru' }, 'Sesi baru'),
+    h('a', { class: 'btn btn-primary btn-big btn-block', href: '#/scan', id: 'mulai-scan' }, 'Mulai scan'),
+    h('p', { class: 'small muted' }, 'Scan lembar kunci Anda dulu, lalu lembar siswa. Semua dinilai dan disimpan otomatis.'),
+    h('a', { class: 'btn btn-block', href: '#/sesi/baru' }, 'Sesi baru dengan kelas & kunci manual'),
     h('h2', null, 'Sesi aktif'),
     aktif.length
       ? h('ul', { class: 'list card' }, aktif.map((s, i) => h('li', null,
-          h('div', { class: 'grow' }, h('b', null, s.namaPaket), h('div', { class: 'small muted' }, `${s.namaKelas} · ${formatTanggal(s.tanggal)} · ${hitung[i]}/${jml[s.kelasId] ?? '?'} lembar`)),
+          h('div', { class: 'grow' }, h('b', null, s.namaPaket), h('div', { class: 'small muted' }, s.otomatis ? `${formatTanggal(s.tanggal)} · ${hitung[i]} lembar` : `${s.namaKelas} · ${formatTanggal(s.tanggal)} · ${hitung[i]}/${jml[s.kelasId] ?? '?'} lembar`)),
           h('a', { class: 'btn btn-sm', href: `#/sesi/${s.id}` }, 'Rekap'),
-          h('a', { class: 'btn btn-sm btn-primary', href: `#/sesi/${s.id}/pindai` }, 'Lanjut pindai'))))
+          h('a', { class: 'btn btn-sm btn-primary', href: s.otomatis ? `#/scan/${s.id}` : `#/sesi/${s.id}/pindai` }, 'Lanjut scan'))))
       : h('p', { class: 'muted' }, 'Belum ada sesi aktif.'),
-    !kelas.length && h('div', { class: 'card' }, h('b', null, 'Mulai dari sini: '), 'buat kelas dan masukkan daftar siswa. ', h('a', { href: '#/kelas/baru' }, 'Tambah kelas')),
   );
 }

@@ -14,7 +14,7 @@ import { app } from '../../main.js';
  * @param p.kecualiHasilId id hasil yang sedang diubah (abaikan saat cek ganda)
  * @param p.onUbah  dipanggil dengan {siswa, timpaId} atau null
  */
-export function panelNama({ kelas, sesi, kotakNama, namaTerpotong, terpilih, kecualiHasilId, onUbah }) {
+export function panelNama({ kelas, sesi, kotakNama, fotoNama, namaTerpotong, terpilih, kecualiHasilId, onUbah }) {
   const st = { siswa: terpilih ? kelas.siswa.find(s => s.id === terpilih.siswaId) || { id: terpilih.siswaId, nama: terpilih.nama } : null, timpaId: null, bacaan: null, cocok: null, sedang: false, galat: null };
   const box = h('div', { class: 'card stack' });
 
@@ -59,7 +59,7 @@ export function panelNama({ kelas, sesi, kotakNama, namaTerpotong, terpilih, kec
   };
 
   const render = () => {
-    const crop = kotakNama ? imageToCanvas(kotakNama) : null;
+    const crop = kotakNama ? imageToCanvas(kotakNama) : fotoNama ? h('img', { src: URL.createObjectURL(fotoNama), alt: 'Kotak nama' }) : null;
     if (crop) crop.className = 'namecrop';
     if (st.siswa) {
       mount(box, h('div', { class: 'row' }, h('div', { class: 'grow' }, h('div', { class: 'small muted' }, 'Nama siswa (dikonfirmasi)'), h('b', { style: { fontSize: '1.15rem' } }, st.siswa.nama),

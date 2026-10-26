@@ -55,7 +55,24 @@ respons server. UI menampilkan catatan "Data keluar perangkat" setiap kali gamba
 **Cadangan**: Lainnya > Cadangan > Ekspor menghasilkan satu file JSON berisi seluruh data (opsional dengan foto).
 Aplikasi mengingatkan bila cadangan terakhir lebih dari 14 hari. Impor mengganti seluruh data di perangkat.
 
-## Alur pakai
+## Mode utama: hanya scan
+
+1. Beranda > **Mulai scan**.
+2. Scan **lembar kunci**: lembar jawaban kosong yang Anda hitamkan sesuai kunci. Jenis lembar (もじ・ごい atau
+   ぶんぽう・どっかい) dikenali otomatis; paket dan sesi dibuat sendiri. Nomor yang bulatannya tidak jelas tidak dinilai
+   dan ditampilkan.
+3. Scan **lembar siswa** satu per satu. Tidak ada yang perlu diketik atau diketuk:
+   - kamera (alamat HTTPS) mengambil foto sendiri saat lembar terbaca stabil, lalu bergetar/berbunyi;
+   - atau unggah banyak foto sekaligus, atau **PDF** dari aplikasi scanner (CamScanner, Adobe Scan, scanner kantor);
+   - lembar yang sama tidak tersimpan dua kali.
+4. Hasil dinilai dan **disimpan otomatis**. Nama dibaca Claude (bila aktif) dan dicocokkan ke daftar; nama baru masuk
+   kelas "Siswa (scan otomatis)". Tanpa Claude, lembar diberi nama "Lembar 1, 2, ..." dan foto kotak namanya disimpan.
+5. Soal ragu (ganda / tidak yakin) dan nama yang tidak pasti diberi tanda **perlu cek** di rekap. Pemeriksaan opsional.
+
+Konsekuensi: berbeda dengan alur manual, mode ini tidak mewajibkan konfirmasi guru. Soal "tidak yakin" dinilai
+memakai saran OMR, soal "ganda" dihitung salah. Periksa baris bertanda bila nilai dipakai untuk keputusan penting.
+
+## Alur manual (opsional)
 
 1. **Kelas**: tempel daftar dari Google Sheets atau unggah CSV (kolom Nama, Katakana opsional, NIS opsional).
 2. **Sesi baru**: pilih kelas, pilih paket lama atau buat paket baru (template lembar + batas lulus), isi kunci:

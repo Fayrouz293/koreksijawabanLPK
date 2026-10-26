@@ -14,8 +14,18 @@ self.onmessage = async (e) => {
   try {
     const cv = await cvReady;
     if (tipe === 'siap') return self.postMessage({ id, ok: true });
-    const fn = tipe === 'kalibrasi' ? calibrate : readSheet;
-    const hasil = fn(cv, img, template, opts || {});
+    let hasil;
+    if (tipe === 'kalibrasi') hasil = calibrate(cv, img, template, opts || {});
+    else if (tipe === 'otomatis') {
+      // coba semua template, pilih yang terbaca dengan skor struktur tertinggi
+      let gagal = null;
+      for (const t of template) {
+        const r = readSheet(cv, img, t, opts || {});
+        if (r.ok) { r.templateId = t.id; if (!hasil || r.kualitas.skorStruktur > hasil.kualitas.skorStruktur) hasil = r; }
+        else if (!gagal || r.alasan !== 'tabel_tidak_lengkap') gagal = r;
+      }
+      hasil ??= gagal;
+    } else hasil = readSheet(cv, img, template, opts || {});
     const transfer = [];
     if (hasil?.gambarLurus) transfer.push(hasil.gambarLurus.data.buffer);
     if (hasil?.kotakNama) transfer.push(hasil.kotakNama.data.buffer);

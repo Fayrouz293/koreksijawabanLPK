@@ -36,7 +36,9 @@ export async function viewSesi(root, id) {
   const hasil = (await M.hasilSesi(id)).sort((a, b) => a.namaSiswa.localeCompare(b.namaSiswa));
   const rk = rekapSesi(hasil.map(x => ({ nama: x.namaSiswa, nilai: x.nilai })));
   const sudah = new Set(hasil.map(x => x.siswaId));
-  const belum = (kelas?.siswa || []).filter(s => !sudah.has(s.id));
+  const belum = sesi.otomatis ? [] : (kelas?.siswa || []).filter(s => !sudah.has(s.id));
+  const perluCek = hasil.filter(x => x.status === 'otomatis' && (x.perluCek?.length || ['cocok_lemah', 'tanpa_nama', 'ganda_di_sesi'].includes(x.namaStatus)));
+  const urlFoto = [];
   const tabel = barisRekap(sesi, hasil, kelas);
   const namaFile = `${sesi.namaPaket}-${sesi.namaKelas}-${sesi.tanggal}`.replace(/[^\w.-]+/g, '_');
   const tanpaKunci = Object.values(sesi.kunci).filter(v => v == null).length;
@@ -45,16 +47,17 @@ export async function viewSesi(root, id) {
     back('#/sesi', 'Daftar sesi'),
     h('h1', null, sesi.namaPaket),
     h('div', { class: 'small muted' }, `${sesi.namaKelas} · ${formatTanggal(sesi.tanggal)} · batas lulus ${sesi.batasLulus}% · `, h('span', { class: 'badge ' + (sesi.status === 'aktif' ? 'ok' : '') }, sesi.status)),
+    perluCek.length ? h('div', { class: 'banner warn small' }, `${perluCek.length} lembar disimpan otomatis dengan tanda "perlu cek" (soal ragu atau nama tidak pasti). Pemeriksaan opsional: ketuk Tinjau pada baris bertanda.`) : null,
     tanpaKunci ? h('div', { class: 'banner warn small' }, `${tanpaKunci} soal tanpa kunci (tidak dinilai). `, h('a', { href: `#/sesi/${id}/kunci` }, 'Lengkapi kunci')) : null,
     h('div', { class: 'row', style: { margin: '10px 0' } },
-      h('a', { class: 'btn btn-primary grow', href: `#/sesi/${id}/pindai` }, sesi.status === 'aktif' ? 'Lanjut pindai' : 'Pindai lagi'),
+      h('a', { class: 'btn btn-primary grow', href: sesi.otomatis ? `#/scan/${id}` : `#/sesi/${id}/pindai` }, sesi.status === 'aktif' ? 'Lanjut scan' : 'Scan lagi'),
       h('a', { class: 'btn', href: `#/sesi/${id}/kunci` }, 'Ubah kunci'),
       h('button', { class: 'btn', onclick: async () => {
         sesi.status = sesi.status === 'aktif' ? 'selesai' : 'aktif'; await M.simpanSesi(sesi); viewSesi(root, id);
       } }, sesi.status === 'aktif' ? 'Tandai selesai' : 'Aktifkan lagi')),
     h('h2', null, 'Ringkasan'),
     h('div', { class: 'stats' },
-      stat('Lembar', `${rk.jumlah}/${kelas?.siswa.length ?? '?'}`),
+      stat('Lembar', sesi.otomatis ? `${rk.jumlah}` : `${rk.jumlah}/${kelas?.siswa.length ?? '?'}`),
       stat('Rata-rata', rk.rataRata != null ? `${rk.rataRata}%` : '-'),
       stat('Tertinggi', rk.tertinggi ? `${rk.tertinggi.persen}%` : '-', rk.tertinggi?.nama.join(', ')),
       stat('Terendah', rk.terendah ? `${rk.terendah.persen}%` : '-', rk.terendah?.nama.join(', ')),
@@ -72,7 +75,9 @@ export async function viewSesi(root, id) {
       ? h('div', { class: 'card tablewrap' }, h('table', { class: 'data', id: 'tabel-rekap' },
           h('tr', null, h('th', null, 'Nama'), h('th', null, 'Skor'), h('th', null, '%'), h('th', null, 'Status'), sesi.mondai.map(m => h('th', null, `M${m.no}`)), h('th', null, 'Soal salah'), h('th', null, '')),
           hasil.map(x => h('tr', null,
-            h('td', null, h('a', { href: kelas ? `#/kelas/${kelas.id}/siswa/${x.siswaId}` : '#' }, x.namaSiswa)),
+            h('td', null, h('a', { href: kelas ? `#/kelas/${kelas.id}/siswa/${x.siswaId}` : '#' }, x.namaSiswa),
+              x.fotoNama instanceof Blob && ['tanpa_nama', 'cocok_lemah', 'membaca', 'ganda_di_sesi'].includes(x.namaStatus) ? h('img', { class: 'namecrop', alt: 'Kotak nama', src: (urlFoto.push(URL.createObjectURL(x.fotoNama)), urlFoto.at(-1)), style: { maxHeight: '40px', marginTop: '4px' } }) : null,
+              x.status === 'otomatis' && (x.perluCek?.length || ['cocok_lemah', 'tanpa_nama', 'ganda_di_sesi'].includes(x.namaStatus)) ? h('div', null, h('span', { class: 'badge warn' }, 'perlu cek')) : null),
             h('td', null, `${x.nilai.skor}/${x.nilai.skorMaks}`), h('td', null, x.nilai.persen),
             h('td', null, h('span', { class: 'badge ' + (x.nilai.lulus ? 'ok' : 'bad') }, x.nilai.lulus ? 'lulus' : 'tidak')),
             x.nilai.perMondai.map(m => h('td', null, `${m.skor}/${m.maks}`)),
@@ -85,6 +90,7 @@ export async function viewSesi(root, id) {
       if (!(await konfirmasi('Hapus sesi?', `Sesi dan ${hasil.length} hasilnya dihapus permanen.`, 'Hapus sesi', true))) return;
       await M.hapusSesi(id); location.hash = '#/sesi';
     } }, 'Hapus sesi'));
+  return () => urlFoto.forEach(u => URL.revokeObjectURL(u));
 }
 
 function stat(label, nilai, sub) { return h('div', { class: 'stat' }, h('span', { class: 'small muted' }, label), h('b', null, nilai), sub ? h('span', { class: 'small muted' }, sub) : null); }
